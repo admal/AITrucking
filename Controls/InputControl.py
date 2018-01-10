@@ -31,5 +31,8 @@ class GamepadInputTrainingHandler:
 
 
 def process_screen(screen):
-	dst = cv2.resize(screen, (IMAGE_WIDTH, IMAGE_HEIGHT))
+	dst = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+	dst = dst[SCREEN_HEIGHT - 400:SCREEN_HEIGHT, 0:SCREEN_WIDTH]
+
+	dst = cv2.resize(dst, (IMAGE_WIDTH, IMAGE_HEIGHT))
 	return dst

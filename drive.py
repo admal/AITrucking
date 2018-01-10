@@ -15,7 +15,7 @@ def start():
 
 	input_controller = GamepadInputController()
 	input_controller.init()
-	training_data_file  = open(TRAINING_DIRECTORY + '\\train_data.csv', "w")
+	training_data_file  = open(TRAINING_DIRECTORY + '\\train_data.csv', "a")
 	writer = csv.writer(training_data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 	handler = GamepadInputTrainingHandler(writer)
