@@ -109,6 +109,7 @@ class GamepadInputController:
 	def init(self):
 		# Get the number of supported devices (usually 16).
 		num_devs = joyGetNumDevs()
+		print(num_devs)
 		if num_devs == 0:
 			raise UnpluggedError('There is no plugged in gamepad')
 
@@ -118,7 +119,7 @@ class GamepadInputController:
 		# Check if the joystick is plugged in.
 		info = JOYINFO()
 		p_info = ctypes.pointer(info)
-		if joyGetPos(0, p_info) != 0:
+		if joyGetPos(joy_id, p_info) != 0:
 			print("Joystick %d not plugged in." % (joy_id + 1))
 
 		# Get device capabilities.

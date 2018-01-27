@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 
 from config import *
+from Utils.utils import process_screen
 
 class GamepadInputTrainingHandler:
 	writer = None
@@ -23,16 +24,10 @@ class GamepadInputTrainingHandler:
 				cv2.imshow("win1", dst)
 			
 			img_filename = TRAINING_DIRECTORY + '\\Images\\' + datetime.now().strftime('%d%m%Y%H%M%S%f') + '.jpg'
-			cv2.imwrite(img_filename, dst)
-			self.writer.writerow([img_filename, pad_input['A_X'], pad_input['RT'], pad_input['LT']])
+			#cv2.imwrite(img_filename, dst)
+			#self.writer.writerow([img_filename, pad_input['A_X'], pad_input['RT'], pad_input['LT']])
 			# print('rotation', 'throttle', 'brake')
 			print(pad_input['A_X'], pad_input['RT'], pad_input['LT'])
 			self._last_time_handle = time.time()
 
 
-def process_screen(screen):
-	dst = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
-	dst = dst[SCREEN_HEIGHT - 400:SCREEN_HEIGHT, 0:SCREEN_WIDTH]
-
-	dst = cv2.resize(dst, (IMAGE_WIDTH, IMAGE_HEIGHT))
-	return dst
