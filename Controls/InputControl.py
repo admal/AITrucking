@@ -24,8 +24,8 @@ class GamepadInputTrainingHandler:
 				cv2.imshow("win1", dst)
 			
 			img_filename = TRAINING_DIRECTORY + '\\Images\\' + datetime.now().strftime('%d%m%Y%H%M%S%f') + '.jpg'
-			#cv2.imwrite(img_filename, dst)
-			#self.writer.writerow([img_filename, pad_input['A_X'], pad_input['RT'], pad_input['LT']])
+			cv2.imwrite(img_filename, dst)
+			self.writer.writerow([img_filename, pad_input['A_X'], pad_input['RT'], pad_input['LT']])
 			# print('rotation', 'throttle', 'brake')
 			print(pad_input['A_X'], pad_input['RT'], pad_input['LT'])
 			self._last_time_handle = time.time()

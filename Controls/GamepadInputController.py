@@ -106,6 +106,10 @@ class UnpluggedError(RuntimeError):
 
 
 class GamepadInputController:
+	def __init__(self):
+		self.button_states = {}
+		self.caps = None
+
 	def init(self):
 		# Get the number of supported devices (usually 16).
 		num_devs = joyGetNumDevs()
@@ -123,17 +127,17 @@ class GamepadInputController:
 			print("Joystick %d not plugged in." % (joy_id + 1))
 
 		# Get device capabilities.
-		caps = JOYCAPS()
-		if joyGetDevCaps(joy_id, ctypes.pointer(caps), ctypes.sizeof(JOYCAPS)) != 0:
+		self.caps = JOYCAPS()
+		if joyGetDevCaps(joy_id, ctypes.pointer(self.caps), ctypes.sizeof(JOYCAPS)) != 0:
 			print("Failed to get device capabilities.")
 
-		print("Driver name:", caps.szPname)
+		print("Driver name:", self.caps.szPname)
 
 		# Fetch the name from registry.
 		key = None
-		if len(caps.szRegKey) > 0:
+		if len(self.caps.szRegKey) > 0:
 			try:
-				key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "System\\CurrentControlSet\\Control\\MediaResources\\Joystick\\%s\\CurrentJoystickSettings" % (caps.szRegKey))
+				key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "System\\CurrentControlSet\\Control\\MediaResources\\Joystick\\%s\\CurrentJoystickSettings" % (self.caps.szRegKey))
 			except WindowsError:
 				key = None
 
@@ -147,8 +151,7 @@ class GamepadInputController:
 				key2.Close()
 
 		# Set the initial button states.
-		self.button_states = {}
-		for b in range(caps.wNumButtons):
+		for b in range(self.caps.wNumButtons):
 			name = button_names[b]
 			if (1 << b) & info.wButtons:
 				self.button_states[name] = True
@@ -185,6 +188,12 @@ class GamepadInputController:
 			lt = max(-1.0,  trig * 2 - 1.0)
 			rt = max(-1.0, -trig * 2 - 1.0)
 
+			# Figure out which buttons are pressed.
+			for b in range(self.caps.wNumButtons):
+				pressed = (0 != (1 << b) & info.dwButtons)
+				name = button_names[b]
+				self.button_states[name] = pressed
+
 			# Determine the state of the POV buttons using the provided POV angle.
 			if info.dwPOV == 65535:
 				povangle1 = None
@@ -197,12 +206,14 @@ class GamepadInputController:
 			for i, btn in enumerate(povbtn_names):
 				if i == povangle1 or i == povangle2:
 					self.button_states[btn] = True
+					print('Pressed: {}; State: {}'.format(btn, self.button_states[btn]))
 				else:
 					self.button_states[btn] = False
 			return {
 				'A_X': x,
 				'LT': lt,
-				'RT': rt
+				'RT': rt,
+				'start': self.button_states['start']
 			}
 		else:
 			raise UnpluggedError('Gamepad is not plugged into')
