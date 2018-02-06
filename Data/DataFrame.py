@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 import cv2
 import numpy as np
@@ -10,6 +11,7 @@ class DataFrame:
 	_raw_screen = None
 	_processed_screen = None
 	_screen_filename = None
+	is_deleted = False
 	rotation = 0.0
 	_acceleration = 0.0
 
@@ -43,3 +45,8 @@ class DataFrame:
 
 	def get_data_row(self):
 		return self._screen_filename, self.rotation, self._acceleration
+
+	def delete(self):
+		self.is_deleted = True
+		if self.is_screen_saved():
+			os.remove(self._screen_filename)

@@ -1,5 +1,6 @@
 import csv
 import logging
+import random
 
 import numpy as np
 import time
@@ -37,6 +38,9 @@ class DataFormatter:
 		started = time.time()
 		straight, left, right = self._balance_frames()
 		logging.info("After balance: straight: {}, left: {}, right: {}".format(straight, left, right))
+		logging.info("After balance real straight: {}".format(len([tmp for tmp in self._frames if not tmp.is_deleted and -0.2<tmp.rotation<0.2])))
+		logging.info("Deleted: {}".format(len([tmp for tmp in self._frames if tmp.is_deleted])))
+
 		idx = 0
 
 		validation_data_writer = csv.writer(self._validation_data_file, delimiter=',', quotechar='"',
@@ -49,11 +53,11 @@ class DataFormatter:
 
 			# frame.save_screen()
 			filename, rotation, acceleration = frame.get_data_row()
-
-			if idx % 10 == 0:
-				validation_data_writer.writerow([filename, rotation, acceleration])
-			else:
-				training_data_writer.writerow([filename, rotation, acceleration])
+			if not frame.is_deleted:
+				if idx % 10 == 0:
+					validation_data_writer.writerow([filename, rotation, acceleration])
+				else:
+					training_data_writer.writerow([filename, rotation, acceleration])
 
 		self._frames.clear()
 		print('Saving took: {}'.format(time.time() - started))
@@ -82,7 +86,7 @@ class DataFormatter:
 			if to_flip > 0 and frame.rotation > delta and rnd == 1:
 				# flip from right to left
 				frame.flip()
-				#if screen was already save overrite
+				# if screen was already save overrite
 				if frame.is_screen_saved():
 					frame.save_screen()
 
@@ -91,7 +95,7 @@ class DataFormatter:
 				flipped = flipped + 1
 			elif to_flip < 0 and frame.rotation < -delta and rnd == 1:
 				frame.flip()
-				#if screen was already save overrite
+				# if screen was already save overrite
 				if frame.is_screen_saved():
 					frame.save_screen()
 				right = right + 1
@@ -100,6 +104,15 @@ class DataFormatter:
 
 			if flipped >= abs(to_flip):
 				break
+
+		rotations = max(left, right)
+		if straight > rotations:
+			to_delete = straight - rotations
+			forward_frames = [forward for forward in self._frames if -delta < forward.rotation < delta]
+			frames_to_delete = random.sample(forward_frames, to_delete)
+			for frame in frames_to_delete:
+				straight = straight - 1
+				frame.delete()
 
 		return straight, left, right
 
