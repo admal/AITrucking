@@ -28,6 +28,21 @@ def main():
 	y = np.reshape(y, [-1, 1])
 	y_v = np.reshape(y_v, [-1, 1])
 
+	delta = 0.2
+	straight = 0
+	right = 0
+	left = 0
+	for rotation in y:
+		if rotation < -delta:
+			left = left + 1
+		elif rotation > delta:
+			right = right + 1
+		else:
+			straight = straight + 1
+
+	logging.info("Data distribution: straight: {}; left: {}; right:{}".format(
+		straight, left, right
+	))
 	for i in range(0, MAX_ITERS):
 		iter_start_time = datetime.now()
 		logging.info("START ITERATION {}/{}".format(i + 1, MAX_ITERS))

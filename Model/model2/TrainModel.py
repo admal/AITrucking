@@ -13,7 +13,7 @@ class TrainModel(Model):
 		          validation_set=(x_val, y_val),
 		          shuffle=True,
 		          show_metric=True,
-		          batch_size=16,
+		          batch_size=32,
 		          snapshot_step=10,
 		          snapshot_epoch=True,
 		          run_id='NvidiaModel')
