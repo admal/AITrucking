@@ -9,13 +9,16 @@ def drive():
 	model = PredictModel()
 	vj = vJoy()
 	vj.open()
-	print('3 sec to start')
-	time.sleep(3)
-	print('start')
 
 	joystick_position = vj.generateJoystickPosition(wAxisX=16000, wAxisY=16000)
 	vj.update(joystick_position)
 
+	model.get_model() #init model
+	print('Model loaded. Press any key to start recording...')
+	input()
+	print('3 sec to start')
+	time.sleep(3)
+	print('start')
 	while True:
 		frame_started = time.time()
 		screen = grab_screen(region=(0, 40, SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -30,7 +33,7 @@ def drive():
 
 		time.sleep(0.01)
 
-		print('Time: {0:.3g}s; Predicted: {1: .3g};'.format(time.time() - frame_started, steering_angle))
+		print('Time: {0:.3g}s; Predicted: {1: .5g};'.format(time.time() - frame_started, 16000 + xPos))
 
 	vj.close()
 

@@ -10,7 +10,7 @@ def load_image(img_path):
 	return image
 
 
-def load_csv_data(learning_set_path, validation_set_size):
+def load_csv_data(learning_set_path):
 	train_data_df = pd.read_csv(os.path.join(os.getcwd(), learning_set_path, 'train_data.csv'),
 	                            names=['file', 'steering', 'throttle', 'brake'])
 	validation_data_df = pd.read_csv(os.path.join(os.getcwd(), learning_set_path, 'validation_data.csv'),
